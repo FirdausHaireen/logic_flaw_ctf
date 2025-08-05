@@ -7,59 +7,52 @@ app.secret_key = "supersecretkey"
 app.permanent_session_lifetime = timedelta(minutes=30)
 
 users = {
-    "alice": {"password": "alice123", "role": "employee"},
-    "bob": {"password": "bob123", "role": "admin"}
+    "alice": {"password": "alicepass", "orders": ["ORD-2394F3C1", "ORD-2394F0C1"]},
+    "bob": {"password": "bobpass", "orders": ["ORD-2394F0C1"]}
 }
 
-pending_requests = []
+orders = {
+    "ORD-2394F0C1": {"user": "bob", "item": "UltraDrone X2", "total": "$9999", "flag": "FLAG{harder_idor_order_access}"},
+    "ORD-2394F3C1": {"user": "alice", "item": "Phone Case", "total": "$12", "flag": None},
+    "ORD-2394F0C1": {"user": "alice", "item": "Bluetooth Speaker", "total": "$45", "flag": None}
+}
 
 @app.route("/")
 def index():
-    if "user" in session:
-        return render_template("dashboard.html", user=session["user"], role=session["role"])
+    if "username" in session:
+        return redirect(url_for("dashboard"))
     return redirect(url_for("login"))
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        if username in users and users[username]["password"] == password:
-            session["user"] = username
-            session["role"] = users[username]["role"]
-            return redirect(url_for("index"))
-        return "Invalid credentials"
+        uname = request.form["username"]
+        pw = request.form["password"]
+        if uname in users and users[uname]["password"] == pw:
+            session["username"] = uname
+            return redirect(url_for("dashboard"))
+        else:
+            return "Invalid login"
     return render_template("login.html")
+
+@app.route("/dashboard")
+def dashboard():
+    if "username" not in session:
+        return redirect(url_for("login"))
+    username = session["username"]
+    user_orders = users[username]["orders"]
+    return render_template("dashboard.html", username=username, orders=user_orders)
+
+@app.route("/orders/view/<order_id>")
+def view_order(order_id):
+    if "username" not in session:
+        return redirect(url_for("login"))
+    order = orders.get(order_id)
+    if not order:
+        return "Order not found", 404
+    return render_template("order.html", order_id=order_id, order=order)
 
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login"))
-
-@app.route("/request-access", methods=["GET", "POST"])
-def request_access():
-    if "user" not in session:
-        return redirect(url_for("login"))
-    if request.method == "POST":
-        user = session["user"]
-        role = request.form["role"]
-        pending_requests.append({"user": user, "role": role})
-        return "Request submitted"
-    return render_template("request_access.html", user=session["user"])
-
-@app.route("/admin/pending", methods=["GET", "POST"])
-def admin_panel():
-    if "user" not in session or session.get("role") != "admin":
-        return "Access denied"
-    if request.method == "POST":
-        user = request.form["user"]
-        role = request.form["role"]
-        if user in users:
-            users[user]["role"] = role
-    return render_template("admin_panel.html", requests=pending_requests)
-
-@app.route("/admin/panel")
-def super_admin():
-    if "user" in session and session.get("role") == "admin":
-        return "FLAG{privilege_escalation_success}"
-    return "Access denied"

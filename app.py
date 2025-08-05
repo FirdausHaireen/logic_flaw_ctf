@@ -14,7 +14,8 @@ users = {
 orders = {
     "ORD-2394F0C1": {"user": "bob", "item": "UltraDrone X2", "total": "$9999", "flag": "FLAG{harder_idor_order_access}"},
     "ORD-2394F3C1": {"user": "alice", "item": "Phone Case", "total": "$12", "flag": None},
-    "ORD-2394F3C2": {"user": "alice", "item": "Bluetooth Speaker", "total": "$45", "flag": None}
+    "ORD-2394F3C2": {"user": "alice", "item": "Bluetooth Speaker", "total": "$45", "flag": None},
+    "ORD-2394F3C3": {"user": "alice", "item": "Bluetooth Speaker", "total": "$45", "flag": "pkb{dGhpc2lzbm90dGhlZmxhZw==}"}
 }
 
 @app.route("/")

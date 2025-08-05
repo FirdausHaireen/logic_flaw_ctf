@@ -1,0 +1,9 @@
+
+<h2>Welcome, {{ username }}</h2>
+<h3>Your Orders:</h3>
+<ul>
+  {% for oid in orders %}
+    <li><a href="/orders/view/{{ oid }}">{{ oid }}</a></li>
+  {% endfor %}
+</ul>
+<a href="/logout">Logout</a>

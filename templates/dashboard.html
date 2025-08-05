@@ -1,0 +1,8 @@
+
+<h2>Welcome, {{ user }} ({{ role }})</h2>
+<a href="/request-access">Request Internal Access</a><br>
+{% if role == 'admin' %}
+<a href="/admin/pending">Review Requests</a><br>
+<a href="/admin/panel">Admin Panel</a><br>
+{% endif %}
+<a href="/logout">Logout</a>

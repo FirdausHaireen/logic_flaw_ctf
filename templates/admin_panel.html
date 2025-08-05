@@ -1,0 +1,9 @@
+
+<h2>Pending Requests</h2>
+<form method="post">
+  {% for r in requests %}
+    User: <input name="user" value="{{ r.user }}"><br>
+    Approve as role: <input name="role" value="{{ r.role }}"><br>
+    <button type="submit">Approve</button><br><br>
+  {% endfor %}
+</form>

@@ -1,0 +1,16 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Request Reset</title></head>
+<body>
+  <h2>Request Password Reset</h2>
+  <form method="POST">
+    <input type="text" name="username" placeholder="Username" required>
+    <button type="submit">Request Reset</button>
+  </form>
+  {% if token %}
+    <p>Token: <code>{{ token }}</code></p>
+    <p>Use this token at <code>/reset-password?token=...</code></p>
+  {% endif %}
+</body>
+</html>
